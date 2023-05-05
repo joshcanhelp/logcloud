@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "start": "nodemon server",
+    "lint": "prettier . --write"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "fastify": "^4.17.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22",
+    "prettier": "^2.8.8"
+  }
+}
