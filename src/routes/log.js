@@ -33,6 +33,6 @@ module.exports = async (fastify, options) => {
         delete error.config.headers;
       }
       done(error);
-    }
+    },
   });
 };
