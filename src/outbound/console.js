@@ -4,5 +4,5 @@ const handle = async (log) => {
 
 module.exports = {
   name: "Console log",
-  handle
-}
+  handle,
+};

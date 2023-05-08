@@ -4,9 +4,7 @@ const { authorization } = require("../middleware/authorization");
 const { getOutboundHandler } = require("../utils");
 
 module.exports = async (fastify, options) => {
-  fastify.route({
-    method: "POST",
-    url: "/log",
+  fastify.post("/log", {
     schema: {
       body: {
         type: "object",
@@ -26,10 +24,8 @@ module.exports = async (fastify, options) => {
       },
     },
     preHandler: authorization,
-    handler: async (request) => {
-      const response = getOutboundHandler().handle(request.body);
-      fastify.log.info(response);
-      return "OK";
+    handler: async (request, reply) => {
+      await getOutboundHandler().handle(request.body);
     },
   });
 };

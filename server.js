@@ -1,25 +1,32 @@
-const { getOutboundHandler } = require("./src/utils");
-
-// Require the framework and instantiate it
 const fastify = require("fastify")({ logger: true });
+
+const { getOutboundHandler } = require("./src/utils");
 
 const { PORT: port = 3000 } = process.env;
 
 // Health check
 fastify.get("/", () => "OK");
 
+// Configuration check
+fastify.register((instance, ops, next) => {
+  if (!process.env.API_KEYS) {
+    next(new Error("Authorization not configured"));
+  }
+
+  try {
+    fastify.log.info("Sending logs to: " + getOutboundHandler().name);
+  } catch (handlerError) {
+    next(new Error(handlerError.message));
+  }
+
+  next();
+});
+
 fastify.register(require("./src/routes/log"));
 
 fastify.listen({ port }, (error) => {
-  if (!process.env.API_KEYS) {
-    fastify.log.error(new Error("Authorization not configured"));
-    process.exit(1);
-  }
-
-  fastify.log.info("Sending logs to: " + getOutboundHandler().name);
-
   if (error) {
-    fastify.log.error(error);
+    fastify.log.error(error.message);
     process.exit(1);
   }
 });

@@ -40,7 +40,7 @@ const preFlight = (log) => {
     throw new Error("SLACK_WEBHOOK_URL not defined in env");
   }
   new URL(process.env.SLACK_WEBHOOK_URL);
-}
+};
 
 const handle = async (log) => {
   const slackResponse = await axios.post(
@@ -58,5 +58,5 @@ const handle = async (log) => {
 module.exports = {
   name: "Slack WebHook",
   preFlight,
-  handle
-}
+  handle,
+};
