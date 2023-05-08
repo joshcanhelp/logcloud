@@ -27,5 +27,12 @@ module.exports = async (fastify, options) => {
     handler: async (request, reply) => {
       await getOutboundHandler().handle(request.body);
     },
+    onError: (request, reply, error, done) => {
+      delete error.response;
+      if (error.config.headers) {
+        delete error.config.headers;
+      }
+      done(error);
+    }
   });
 };
