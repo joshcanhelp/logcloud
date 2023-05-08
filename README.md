@@ -53,7 +53,7 @@ You should see output in the application log:
 }
 ```
 
-To send logs to Slack: 
+**To send logs to Slack:**
 
 1. [Create a Slack app with a WebHook URL](https://api.slack.com/messaging/webhooks).
 2. Uncomment the Slack lines in the env file and add your URL. 
@@ -61,7 +61,7 @@ To send logs to Slack:
 
 ![](./docs/slack-example.png)
 
-To send logs to a Google Sheet:
+**To send logs to a Google Sheet:**
 
 1. [Create a Google Service account](https://cloud.google.com/iam/docs/service-accounts-create#creating).
 2. [Generate and download credentials for the service account](https://cloud.google.com/iam/docs/keys-create-delete).
@@ -71,8 +71,8 @@ To send logs to a Google Sheet:
 6. Uncomment the Google lines in the env file and add your Sheet ID; comment out any other `OUTBOUND` lines.
 7. Restart the application and post a log event like the example above.
 8. The Google Sheet should be appended with a new row with:
-  - Date and time (UTC)
-  - Event type
-  - Actor + component
-  - Event message
-  - Transaction
+     - Date and time (UTC)
+     - Event type
+     - Actor + component
+     - Event message
+     - Transaction
