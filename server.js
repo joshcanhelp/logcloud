@@ -1,4 +1,4 @@
-const fastify = require("fastify")({ logger: true });
+const fastify = require("fastify")({ logger: { transport: { target: "pino-pretty" } } });
 
 const { getOutboundHandler } = require("./src/utils");
 

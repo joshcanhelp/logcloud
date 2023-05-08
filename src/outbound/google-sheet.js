@@ -1,6 +1,7 @@
 const { existsSync } = require("fs");
 const { google } = require("googleapis");
 const { getCurrentDateTime } = require("../utils");
+const path = require("path");
 
 const { GOOGLE_SHEET_KEYS_PATH, GOOGLE_SHEET_ID } = process.env;
 
@@ -8,7 +9,7 @@ const preFlight = (log) => {
   if (!GOOGLE_SHEET_KEYS_PATH) {
     throw new Error("GOOGLE_SHEET_KEYS_PATH not defined in env");
   }
-  if (!existsSync(GOOGLE_SHEET_KEYS_PATH)) {
+  if (!existsSync(path.join(process.cwd(), GOOGLE_SHEET_KEYS_PATH))) {
     throw new Error(`${GOOGLE_SHEET_KEYS_PATH} does not exist`);
   }
 

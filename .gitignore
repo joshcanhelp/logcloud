@@ -1,4 +1,4 @@
 .env
 .vscode
 node_modules
-google-sheet-keys.json
+.google.json
