@@ -14,7 +14,10 @@ module.exports = async (fastify, options) => {
           // required
           actor: { type: "string" },
           text: { type: "string" },
-          level: { type: "string", pattern: "^debug|info|warn|error|fatal$" },
+          level: {
+            type: "string",
+            pattern: "^debug|info|success|warn|error|fatal$",
+          },
           // optional
           component: { type: "string" },
           transaction: { type: "string" },
@@ -24,7 +27,8 @@ module.exports = async (fastify, options) => {
     preHandler: authorization,
     handler: async (request) => {
       const outboundHandler = process.env.OUTBOUND || "console";
-      await require(`../outbound/${outboundHandler}`).default(request.body);
+      const response = await require(`../outbound/${outboundHandler}`).default(request.body);
+      fastify.log.info(response)
       return "OK";
     },
   });

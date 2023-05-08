@@ -15,7 +15,7 @@ fastify.listen({ port }, (error) => {
   }
 
   if (error) {
-    fastify.log.error(err);
+    fastify.log.error(error);
     process.exit(1);
   }
 });
