@@ -1,6 +1,7 @@
 require("dotenv").config();
 
-const { authorization } = require("../authorization");
+const { authorization } = require("../middleware/authorization");
+const { getOutboundHandler } = require("../utils");
 
 module.exports = async (fastify, options) => {
   fastify.route({
@@ -26,9 +27,8 @@ module.exports = async (fastify, options) => {
     },
     preHandler: authorization,
     handler: async (request) => {
-      const outboundHandler = process.env.OUTBOUND || "console";
-      const response = await require(`../outbound/${outboundHandler}`).default(request.body);
-      fastify.log.info(response)
+      const response = getOutboundHandler().handle(request.body);
+      fastify.log.info(response);
       return "OK";
     },
   });

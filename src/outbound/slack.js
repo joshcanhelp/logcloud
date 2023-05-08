@@ -35,7 +35,14 @@ const prepareSlackMsg = (log) => {
   return message;
 };
 
-exports.default = async (log) => {
+const preFlight = (log) => {
+  if (!process.env.SLACK_WEBHOOK_URL) {
+    throw new Error("SLACK_WEBHOOK_URL not defined in env");
+  }
+  new URL(process.env.SLACK_WEBHOOK_URL);
+}
+
+const handle = async (log) => {
   const slackResponse = await axios.post(
     process.env.SLACK_WEBHOOK_URL,
     JSON.stringify({ attachments: [prepareSlackMsg(log)] }),
@@ -47,3 +54,9 @@ exports.default = async (log) => {
   );
   return slackResponse.data;
 };
+
+module.exports = {
+  name: "Slack WebHook",
+  preFlight,
+  handle
+}

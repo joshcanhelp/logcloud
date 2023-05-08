@@ -1,3 +1,5 @@
+const { getOutboundHandler } = require("./src/utils");
+
 // Require the framework and instantiate it
 const fastify = require("fastify")({ logger: true });
 
@@ -13,6 +15,8 @@ fastify.listen({ port }, (error) => {
     fastify.log.error(new Error("Authorization not configured"));
     process.exit(1);
   }
+
+  fastify.log.info("Sending logs to: " + getOutboundHandler().name);
 
   if (error) {
     fastify.log.error(error);
