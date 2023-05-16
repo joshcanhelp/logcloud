@@ -53,6 +53,14 @@ You should see output in the application log:
 }
 ```
 
+**To send logs to memory:**
+
+1. Uncomment the memory `OUTBOUND` var in the env file and adjust `MAX_LOGS_IN_MEMORY` as needed
+2. Run processes that generate logs as usual
+3. Make a `GET` call to the `/log` endpoint with an API key to see all the logs in memory.
+4. Make a `GET` call to the `/log/{$transaction}` endpoint with an API key to see logs for a specific transaction.
+5. Make a `DELETE` call to the `/log` endpoint with an API key to flush all saved logs.
+
 **To send logs to Slack:**
 
 1. [Create a Slack app with a WebHook URL](https://api.slack.com/messaging/webhooks).
