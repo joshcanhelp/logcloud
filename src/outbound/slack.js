@@ -45,33 +45,29 @@ const preFlight = (log) => {
 
 const handle = async (log) => {
   logCache.set(log);
-
   if (logCache.isLocked()) {
     return;
   }
-
   logCache.lock();
 
-  let slackResponse;
   let processLog = logCache.getOldest();
   while (processLog) {
     try {
-      slackResponse = await axios.post(
+      await axios.post(
         process.env.SLACK_WEBHOOK_URL,
         JSON.stringify({ attachments: [prepareSlackMsg(processLog)] }),
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        logCache.pop();
-        processLog = logCache.getOldest();
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      logCache.pop();
+      processLog = logCache.getOldest();
     } finally {
       logCache.unlock();
     }
   }
-  
 };
 
 module.exports = {
