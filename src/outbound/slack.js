@@ -1,5 +1,6 @@
 const axios = require("axios");
-const fastify = require("fastify");
+
+const logCache = require("../logCache");
 
 const levelColors = {
   debug: "#D5DBDB",
@@ -43,16 +44,34 @@ const preFlight = (log) => {
 };
 
 const handle = async (log) => {
-  const slackResponse = await axios.post(
-    process.env.SLACK_WEBHOOK_URL,
-    JSON.stringify({ attachments: [prepareSlackMsg(log)] }),
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
+  logCache.set(log);
+
+  if (logCache.isLocked()) {
+    return;
+  }
+
+  logCache.lock();
+
+  let slackResponse;
+  let processLog = logCache.getOldest();
+  while (processLog) {
+    try {
+      slackResponse = await axios.post(
+        process.env.SLACK_WEBHOOK_URL,
+        JSON.stringify({ attachments: [prepareSlackMsg(processLog)] }),
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        logCache.pop();
+        processLog = logCache.getOldest();
+    } finally {
+      logCache.unlock();
     }
-  );
-  return slackResponse.data;
+  }
+  
 };
 
 module.exports = {
