@@ -7,7 +7,7 @@ const logCache = require("../logCache");
 
 const { GOOGLE_SHEET_KEYS_PATH, GOOGLE_SHEET_ID } = process.env;
 
-const preFlight = (log) => {
+const preFlight = () => {
   if (!GOOGLE_SHEET_KEYS_PATH) {
     throw new Error("GOOGLE_SHEET_KEYS_PATH not defined in env");
   }

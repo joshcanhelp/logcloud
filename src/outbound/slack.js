@@ -36,7 +36,7 @@ const prepareSlackMsg = (log) => {
   return message;
 };
 
-const preFlight = (log) => {
+const preFlight = () => {
   if (!process.env.SLACK_WEBHOOK_URL) {
     throw new Error("SLACK_WEBHOOK_URL not defined in env");
   }
