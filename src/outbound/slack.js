@@ -37,10 +37,10 @@ const prepareSlackMsg = (log) => {
 };
 
 const preFlight = () => {
-  if (!process.env.SLACK_WEBHOOK_URL) {
-    throw new Error("SLACK_WEBHOOK_URL not defined in env");
+  if (!process.env.URL_SLACK_WEBHOOK) {
+    throw new Error("URL_SLACK_WEBHOOK not defined in env");
   }
-  new URL(process.env.SLACK_WEBHOOK_URL);
+  new URL(process.env.URL_SLACK_WEBHOOK);
 };
 
 const handle = async (log) => {
@@ -54,7 +54,7 @@ const handle = async (log) => {
   while (processLog) {
     try {
       await axios.post(
-        process.env.SLACK_WEBHOOK_URL,
+        process.env.URL_SLACK_WEBHOOK,
         JSON.stringify({ attachments: [prepareSlackMsg(processLog)] }),
         {
           headers: {
