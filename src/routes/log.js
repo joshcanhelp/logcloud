@@ -1,5 +1,3 @@
-require("dotenv").config();
-
 const { authorization } = require("../middleware/authorization");
 const { getOutboundHandler } = require("../utils");
 const logCache = require("../logCache");
