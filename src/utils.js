@@ -1,6 +1,7 @@
+const getOutboundHandlerName = () => process.env.OUTBOUND || "memory"
+
 const getOutboundHandler = () => {
-  const handlerName = process.env.OUTBOUND || "console";
-  const outboundHandler = require(`./outbound/${handlerName}`);
+  const outboundHandler = require(`./outbound/${getOutboundHandlerName()}`);
   if (typeof outboundHandler.preFlight === "function") {
     outboundHandler.preFlight();
   }
@@ -31,6 +32,7 @@ const getCurrentDateTime = () => {
 };
 
 module.exports = {
+  getOutboundHandlerName,
   getOutboundHandler,
   getCurrentDateTime,
 };

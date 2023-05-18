@@ -2,9 +2,6 @@ const { existsSync } = require("fs");
 const { google } = require("googleapis");
 const path = require("path");
 
-const { getCurrentDateTime } = require("../utils");
-const logCache = require("../logCache");
-
 const { GOOGLE_SHEET_KEYS_PATH, GOOGLE_SHEET_ID } = process.env;
 
 const preFlight = () => {
@@ -21,12 +18,6 @@ const preFlight = () => {
 };
 
 const handle = async (log) => {
-  logCache.set(log);
-  if (logCache.isLocked()) {
-    return;
-  }
-  logCache.lock();
-
   const auth = new google.auth.GoogleAuth({
     keyFile: GOOGLE_SHEET_KEYS_PATH,
     scopes: "https://www.googleapis.com/auth/spreadsheets",
@@ -37,35 +28,26 @@ const handle = async (log) => {
     auth: await auth.getClient(),
   });
 
-  let processLog = logCache.getOldest();
-  while (processLog) {
-    try {
-      await googleSheetsInstance.spreadsheets.values.append({
-        spreadsheetId: GOOGLE_SHEET_ID,
-        range: "Sheet1",
-        valueInputOption: "USER_ENTERED",
-        resource: {
-          values: [
-            [
-              getCurrentDateTime(),
-              log.level.toUpperCase(),
-              log.actor + (log.component ? " > " + log.component : ""),
-              log.text,
-              log.transaction || "No transaction",
-            ],
-          ],
-        },
-      });
-      logCache.pop();
-      processLog = logCache.getOldest();
-    } finally {
-      logCache.unlock();
-    }
-  }
+  await googleSheetsInstance.spreadsheets.values.append({
+    spreadsheetId: GOOGLE_SHEET_ID,
+    range: "Sheet1",
+    valueInputOption: "USER_ENTERED",
+    resource: {
+      values: [
+        [
+          log.date,
+          log.level,
+          log.actor + (log.component ? " > " + log.component : ""),
+          log.text,
+          log.transaction || "No transaction",
+        ],
+      ],
+    },
+  });
 };
 
 module.exports = {
   name: "Google Sheet",
-  preFlight,
   handle,
+  preFlight,
 };

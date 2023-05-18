@@ -1,19 +1,17 @@
 const axios = require("axios");
 
-const logCache = require("../logCache");
-
 const levelColors = {
-  debug: "#D5DBDB",
-  info: "#5DADE2",
-  success: "#2ECC71",
-  warn: "#F7DC6F",
-  error: "#E67E22",
-  fatal: "#E74C3C",
+  DEBUG: "#D5DBDB",
+  INFO: "#5DADE2",
+  SUCCESS: "#2ECC71",
+  WARN: "#F7DC6F",
+  ERROR: "#E67E22",
+  FATAL: "#E74C3C",
 };
 
 const prepareSlackMsg = (log) => {
   const message = {
-    title: `Level: ${log.level.toUpperCase()}`,
+    title: `Level: ${log.level}`,
     text:
       "Actor `" +
       log.actor +
@@ -44,30 +42,15 @@ const preFlight = () => {
 };
 
 const handle = async (log) => {
-  logCache.set(log);
-  if (logCache.isLocked()) {
-    return;
-  }
-  logCache.lock();
-
-  let processLog = logCache.getOldest();
-  while (processLog) {
-    try {
-      await axios.post(
-        process.env.URL_SLACK_WEBHOOK,
-        JSON.stringify({ attachments: [prepareSlackMsg(processLog)] }),
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      logCache.pop();
-      processLog = logCache.getOldest();
-    } finally {
-      logCache.unlock();
+  await axios.post(
+    process.env.URL_SLACK_WEBHOOK,
+    JSON.stringify({ attachments: [prepareSlackMsg(log)] }),
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
     }
-  }
+  );
 };
 
 module.exports = {

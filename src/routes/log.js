@@ -1,6 +1,8 @@
 const { authorization } = require("../middleware/authorization");
-const { getOutboundHandler } = require("../utils");
+const { getOutboundHandler, getOutboundHandlerName, getCurrentDateTime } = require("../utils");
 const logCache = require("../logCache");
+
+const { OUTBOUND } = process.env;
 
 module.exports = async (fastify, options) => {
   fastify.post("/log", {
@@ -23,8 +25,27 @@ module.exports = async (fastify, options) => {
       },
     },
     preHandler: authorization,
-    handler: async (request, reply) => {
-      await getOutboundHandler().handle(request.body);
+    handler: async (request) => {
+      logCache.set(request.body);
+      if (getOutboundHandlerName() === "memory" || logCache.isLocked()) {
+        return "OK";
+      }
+      logCache.lock();
+
+      const outboundHandler = getOutboundHandler();
+
+      let processLog = logCache.shift();
+      try {
+        while (processLog) {
+          processLog.level = processLog.level.toUpperCase();
+          processLog.date = getCurrentDateTime();
+          await outboundHandler.handle(processLog);
+          processLog = logCache.shift();
+        }
+      } finally {
+        logCache.unlock();
+      }
+
       return "OK";
     },
     onError: (request, reply, error, done) => {
